@@ -299,7 +299,7 @@ interface IMasterContract {
     /// @notice Init function that gets called from `BoringFactory.deploy`.
     /// Also kown as the constructor for cloned contracts.
     /// Any ETH send to `BoringFactory.deploy` ends up here.
-    /// @param data Can be abi encoded arguments or anything else.
+    /// @param data Can be gen encoded arguments or anything else.
     function init(bytes calldata data) external payable;
 }
 
@@ -687,39 +687,39 @@ interface IBentoBoxV1 {
 
 interface IOracle {
     /// @notice Get the latest exchange rate.
-    /// @param data Usually abi encoded, implementation specific data that contains information and arguments to & about the oracle.
+    /// @param data Usually gen encoded, implementation specific data that contains information and arguments to & about the oracle.
     /// For example:
-    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = abi.decode(data, (string, string, uint256));
+    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = gen.decode(data, (string, string, uint256));
     /// @return success if no valid (recent) rate is available, return false else true.
     /// @return rate The rate of the requested asset / pair / pool.
     function get(bytes calldata data) external returns (bool success, uint256 rate);
 
     /// @notice Check the last exchange rate without any state changes.
-    /// @param data Usually abi encoded, implementation specific data that contains information and arguments to & about the oracle.
+    /// @param data Usually gen encoded, implementation specific data that contains information and arguments to & about the oracle.
     /// For example:
-    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = abi.decode(data, (string, string, uint256));
+    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = gen.decode(data, (string, string, uint256));
     /// @return success if no valid (recent) rate is available, return false else true.
     /// @return rate The rate of the requested asset / pair / pool.
     function peek(bytes calldata data) external view returns (bool success, uint256 rate);
 
     /// @notice Check the current spot exchange rate without any state changes. For oracles like TWAP this will be different from peek().
-    /// @param data Usually abi encoded, implementation specific data that contains information and arguments to & about the oracle.
+    /// @param data Usually gen encoded, implementation specific data that contains information and arguments to & about the oracle.
     /// For example:
-    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = abi.decode(data, (string, string, uint256));
+    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = gen.decode(data, (string, string, uint256));
     /// @return rate The rate of the requested asset / pair / pool.
     function peekSpot(bytes calldata data) external view returns (uint256 rate);
 
     /// @notice Returns a human readable (short) name about this oracle.
-    /// @param data Usually abi encoded, implementation specific data that contains information and arguments to & about the oracle.
+    /// @param data Usually gen encoded, implementation specific data that contains information and arguments to & about the oracle.
     /// For example:
-    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = abi.decode(data, (string, string, uint256));
+    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = gen.decode(data, (string, string, uint256));
     /// @return (string) A human readable symbol name about this oracle.
     function symbol(bytes calldata data) external view returns (string memory);
 
     /// @notice Returns a human readable name about this oracle.
-    /// @param data Usually abi encoded, implementation specific data that contains information and arguments to & about the oracle.
+    /// @param data Usually gen encoded, implementation specific data that contains information and arguments to & about the oracle.
     /// For example:
-    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = abi.decode(data, (string, string, uint256));
+    /// (string memory collateralSymbol, string memory assetSymbol, uint256 division) = gen.decode(data, (string, string, uint256));
     /// @return (string) A human readable name about this oracle.
     function name(bytes calldata data) external view returns (string memory);
 }
@@ -872,7 +872,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
     }
 
     /// @notice Serves as the constructor for clones, as clones can't have a regular constructor
-    /// @dev `data` is abi encoded in the format: (IERC20 collateral, IERC20 asset, IOracle oracle, bytes oracleData)
+    /// @dev `data` is gen encoded in the format: (IERC20 collateral, IERC20 asset, IOracle oracle, bytes oracleData)
     function init(bytes calldata data) public payable override {
         require(address(collateral) == address(0), "KashiPair: already initialized");
         (collateral, asset, oracle, oracleData) = abi.decode(data, (IERC20, IERC20, IOracle, bytes));
@@ -1253,7 +1253,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
     /// @param actions An array with a sequence of actions to execute (see ACTION_ declarations).
     /// @param values A one-to-one mapped array to `actions`. ETH amounts to send along with the actions.
     /// Only applicable to `ACTION_CALL`, `ACTION_BENTO_DEPOSIT`.
-    /// @param datas A one-to-one mapped array to `actions`. Contains abi encoded data of function arguments.
+    /// @param datas A one-to-one mapped array to `actions`. Contains gen encoded data of function arguments.
     /// @return value1 May contain the first positioned return value of the last executed action (if applicable).
     /// @return value2 May contain the second positioned return value of the last executed action which returns 2 values (if applicable).
     function cook(
